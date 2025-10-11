@@ -2,3 +2,6 @@ packages:
   - frontend
   - frontend-admin
   - packages/*
+
+ignoredBuiltDependencies:
+  - unrs-resolver
