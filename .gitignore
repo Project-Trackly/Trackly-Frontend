@@ -1,0 +1,22 @@
+# Node
+node_modules/
+.pnpm-store/
+
+# Build outputs
+.next/
+.next-cache/
+.turbo/
+coverage/
+dist/
+build/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editor
+.idea/
+.vscode/
+.DS_Store
