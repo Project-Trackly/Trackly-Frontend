@@ -1,4 +1,4 @@
-# Trackly Frontend Monorepo
+# Trackly Frontend Monorepo 
 
 Next.js 기반 사용자 웹앱(`frontend`)과 관리자 콘솔(`frontend-admin`)을 포함한 프론트엔드 전용 저장소입니다. 기존 플랫폼 모노레포에서 프론트엔드 관련 코드만 분리했습니다.
 
