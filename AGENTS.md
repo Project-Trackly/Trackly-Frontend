@@ -45,5 +45,32 @@ pnpm lint               # 린트 전체 실행
 
 ## 배포 참고
 
-- Vercel 배포 시 루트(Trackly-Frontend)를 프로젝트 루트로 설정하고, Install Command `pnpm install`, Build Command `pnpm turbo run build --filter @repo/frontend` (관리자 콘솔도 필요하면 `--filter @repo/frontend-admin` 추가)로 구성합니다.
-- Node 20.x / pnpm 10.x 환경을 권장하며, `package.json`의 `engines` 필드를 참고하세요.
+### Vercel 모노레포 배포 전략
+
+이 모노레포는 **두 개의 독립적인 Vercel 프로젝트**로 배포해야 합니다:
+
+#### 1. 사용자 웹앱 (frontend)
+- **Build Command**: `pnpm run build:web` 
+- **Output Directory**: `frontend/.next`
+- **Install Command**: `pnpm install`
+- 설정 파일: `vercel.json`
+
+#### 2. 관리자 콘솔 (frontend-admin)
+- **Build Command**: `pnpm run build:admin`
+- **Output Directory**: `frontend-admin/.next`
+- **Install Command**: `pnpm install`
+- 설정 파일: `vercel.admin.json`
+
+### Vercel CLI 배포 예시
+```bash
+# 사용자 웹앱
+vercel --prod --name trackly-web
+
+# 관리자 콘솔 (별도 설정 파일 사용)
+vercel --prod --name trackly-admin -A vercel.admin.json
+```
+
+### 요구사항
+- Node.js >=20.x (22.x도 지원)
+- pnpm >=10.x
+- 각 앱의 환경 변수를 Vercel 프로젝트 설정에서 개별 구성

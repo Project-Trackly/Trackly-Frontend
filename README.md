@@ -39,6 +39,42 @@ pnpm lint               # 린트 전체 실행
 - `NEXT_PUBLIC_API_BASE_URL`: 백엔드 API 엔드포인트
 - (관리자 콘솔) 필요한 경우 `ADMIN_BASE_URL` 값을 백엔드에 전달해 CORS 허용을 설정하세요.
 
+## Vercel 배포
+
+이 모노레포는 두 개의 독립적인 앱을 포함하므로, **각각 별도의 Vercel 프로젝트**로 배포해야 합니다.
+
+### 방법 1: Vercel 대시보드에서 배포
+
+#### 사용자 웹앱 (frontend) 배포
+1. Vercel에서 새 프로젝트 생성
+2. 이 저장소 연결
+3. **Root Directory**: 비워두기 (또는 `./`)
+4. **Build Command**: `pnpm run build:web`
+5. **Output Directory**: `frontend/.next`
+6. **Install Command**: `pnpm install`
+
+#### 관리자 콘솔 (frontend-admin) 배포
+1. Vercel에서 **또 다른 새 프로젝트** 생성 (같은 저장소, 다른 프로젝트)
+2. 이 저장소 연결
+3. **Root Directory**: 비워두기 (또는 `./`)
+4. **Build Command**: `pnpm run build:admin`
+5. **Output Directory**: `frontend-admin/.next`
+6. **Install Command**: `pnpm install`
+
+### 방법 2: Vercel CLI로 배포
+
+```bash
+# 사용자 웹앱 배포
+vercel --prod --name trackly-web
+
+# 관리자 콘솔 배포 (vercel.admin.json 사용)
+vercel --prod --name trackly-admin -A vercel.admin.json
+```
+
+### 파일 설명
+- `vercel.json`: 사용자 웹앱용 설정
+- `vercel.admin.json`: 관리자 콘솔용 설정
+
 ## 구조 변경 메모
 
 - `frontend-admin`은 shadcn/ui + Chakra UI 조합으로 새 디자인 시스템을 사용합니다.
