@@ -114,8 +114,6 @@ export default function HomePage({ searchParams }: HomePageProps) {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [profileFetchError, setProfileFetchError] = useState<string | null>(null);
   const [loadingProfile, setLoadingProfile] = useState<boolean>(true);
-  const [refreshing, setRefreshing] = useState(false);
-
   const [dashboard, setDashboard] = useState<DashboardData>(DEFAULT_DASHBOARD);
   const [loadingDashboard, setLoadingDashboard] = useState(true);
   const [dashboardError, setDashboardError] = useState<string | null>(null);
@@ -220,33 +218,10 @@ export default function HomePage({ searchParams }: HomePageProps) {
     }
   };
 
-  const handleRefreshProfile = async () => {
-    if (!tokenStorage.getAccessToken()) {
-      setProfileFetchError("로그인이 필요합니다.");
-      return;
-    }
-    setRefreshing(true);
-    try {
-      const response = await apiFetch("/api/auth/me");
-      const payload = (await response.json()) as ApiResponse<UserProfile | null>;
-      if (response.ok && payload.success && payload.data) {
-        setUser(payload.data);
-        setProfileFetchError(null);
-      } else if (response.status === 401) {
-        setUser(null);
-        setProfileFetchError(null);
-      } else {
-        setProfileFetchError(payload.message ?? "프로필 정보를 불러오지 못했습니다.");
-      }
-    } finally {
-      setRefreshing(false);
-    }
-  };
-
   return (
     <main className="relative min-h-screen overflow-hidden bg-gradient-to-br from-sky-50 via-white to-slate-100 text-slate-900 transition-colors duration-300 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 dark:text-slate-100">
       <div className="pointer-events-none absolute inset-x-0 top-0 h-[360px] bg-[radial-gradient(circle_at_top,_rgba(56,189,248,0.35),_transparent_70%)] opacity-70 dark:bg-[radial-gradient(circle_at_top,_rgba(14,165,233,0.25),_transparent_65%)]" aria-hidden />
-      <div className="relative mx-auto flex w-full max-w-6xl flex-col gap-16 px-6 py-12 sm:py-16 lg:py-20">
+      <div className="relative mx-auto flex w-full max-w-[1280px] flex-col gap-16 px-4 py-12 sm:px-8 sm:py-16 lg:px-10 lg:py-20">
         <nav className="flex flex-wrap items-center justify-between gap-4 text-sm text-slate-600 dark:text-slate-300">
           <div className="flex items-center gap-3">
             <span className="flex h-10 w-10 items-center justify-center rounded-full bg-brand/10 text-base font-semibold text-brand">
@@ -260,15 +235,40 @@ export default function HomePage({ searchParams }: HomePageProps) {
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <a href="#workspace" className="hidden text-xs font-semibold uppercase tracking-[0.28em] text-slate-400 hover:text-slate-900 dark:hover:text-white sm:inline">
+            <a
+              href="#workspace"
+              className="hidden text-xs font-semibold uppercase tracking-[0.28em] text-slate-400 hover:text-slate-900 dark:hover:text-white sm:inline"
+            >
               Workspace
             </a>
-            <a href="#analytics" className="hidden text-xs font-semibold uppercase tracking-[0.28em] text-slate-400 hover:text-slate-900 dark:hover:text-white sm:inline">
+            <a
+              href="#analytics"
+              className="hidden text-xs font-semibold uppercase tracking-[0.28em] text-slate-400 hover:text-slate-900 dark:hover:text-white sm:inline"
+            >
               Insights
             </a>
-            <a href="#story" className="hidden text-xs font-semibold uppercase tracking-[0.28em] text-slate-400 hover:text-slate-900 dark:hover:text-white sm:inline">
+            <a
+              href="#story"
+              className="hidden text-xs font-semibold uppercase tracking-[0.28em] text-slate-400 hover:text-slate-900 dark:hover:text-white sm:inline"
+            >
               Roadmap
             </a>
+            {user ? (
+              <>
+                <Link
+                  href="/projects"
+                  className="hidden text-xs font-semibold uppercase tracking-[0.28em] text-slate-400 hover:text-slate-900 dark:hover:text-white sm:inline"
+                >
+                  내 프로젝트 관리
+                </Link>
+                <Link
+                  href="/mypage"
+                  className="hidden text-xs font-semibold uppercase tracking-[0.28em] text-slate-400 hover:text-slate-900 dark:hover:text-white sm:inline"
+                >
+                  마이페이지
+                </Link>
+              </>
+            ) : null}
             {unauthenticated ? (
               <div className="flex items-center gap-2">
                 <Link href="/login" className="text-xs font-semibold uppercase tracking-[0.28em] text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">
@@ -296,7 +296,7 @@ export default function HomePage({ searchParams }: HomePageProps) {
           </div>
         ) : null}
 
-        <section className="grid-gap-0 grid items-start gap-12 lg:grid-cols-[minmax(0,1fr),320px]">
+        <section className="grid-gap-0 grid items-start gap-12 lg:grid-cols-[minmax(0,1fr),360px] lg:gap-16">
           <div className="space-y-10">
             <div className="space-y-6">
               <span className="inline-flex items-center rounded-full bg-white/70 px-4 py-1 text-xs font-semibold uppercase tracking-[0.28em] text-slate-500 shadow-sm backdrop-blur-sm dark:bg-white/5 dark:text-slate-300">
@@ -306,8 +306,9 @@ export default function HomePage({ searchParams }: HomePageProps) {
                 팀의 일정과 실행을 한 화면에서 조율하는 <span className="text-brand">Trackly</span>
               </h1>
               <p className="max-w-2xl text-base text-slate-600 dark:text-slate-300">
-                캘린더와 태스크 보드를 넘나드는 하이브리드 워크스페이스로 일정 충돌을 줄이고 팀의 리소스를 선명하게 보여줍니다.
-                OAuth2 기반 온보딩으로 누구나 몇 초 만에 합류할 수 있어요.
+                Trackly는 스프린트, 클라이언트 프로젝트, 크로스펑셔널 협업을 한 워크스페이스에서 운영하려는 팀에게 최적화된
+                하이브리드 플래너입니다. 캘린더와 태스크 보드를 동기화해 일정 충돌을 줄이고, OAuth 온보딩과 자동 권한 설정으로
+                새 팀원이 들어와도 바로 실행할 수 있어요. 지금은 베타 단계라 모든 계정이 PRO 모델 기능을 제한 없이 체험할 수 있습니다.
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-3">
@@ -327,12 +328,23 @@ export default function HomePage({ searchParams }: HomePageProps) {
                   </Link>
                 </>
               ) : (
-                <Button onClick={handleRefreshProfile} loading={refreshing}>
-                  데이터 새로고침
-                </Button>
+                <>
+                  <Link
+                    href="/projects"
+                    className="inline-flex items-center gap-2 rounded-full bg-brand text-sm font-semibold text-white shadow-glow transition hover:bg-brand-light"
+                  >
+                    내 프로젝트 관리
+                  </Link>
+                  <Link
+                    href="/mypage"
+                    className="inline-flex items-center gap-2 rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-white dark:border-slate-600 dark:text-slate-100 dark:hover:bg-slate-800"
+                  >
+                    마이페이지
+                  </Link>
+                </>
               )}
               <span className="text-xs uppercase tracking-[0.28em] text-slate-400 dark:text-slate-500">
-                SOC2 PREP · SSO ROADMAP · MULTILINGUAL
+                BETA ACCESS · FULL PRO FEATURES · TEAM-FIRST
               </span>
             </div>
             <div className="grid gap-4 sm:grid-cols-3">
@@ -353,17 +365,8 @@ export default function HomePage({ searchParams }: HomePageProps) {
             ) : null}
           </div>
 
-          <div className="space-y-6">
-            {user ? (
-              <ProfileSummary
-                user={user}
-                onRefresh={handleRefreshProfile}
-                refreshing={refreshing}
-                onLogout={handleLogout}
-              />
-            ) : (
-              <QuickStartCard />
-            )}
+          <div className="space-y-6 lg:w-[360px] lg:justify-self-end lg:pl-2 xl:pl-6">
+            {user ? <WorkspaceAccessCard user={user} /> : <BetaAccessCard />}
             {!loadingProfile && !user && profileFetchError ? (
               <div className="glass border border-coral/30 px-5 py-4 text-sm text-coral">
                 {profileFetchError}
@@ -371,6 +374,12 @@ export default function HomePage({ searchParams }: HomePageProps) {
             ) : null}
           </div>
         </section>
+
+        <GettingStartedSection unauthenticated={unauthenticated} />
+
+        <UseCaseSection />
+
+        <PricingOverviewSection />
 
         <section id="workspace" className="space-y-6">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
@@ -445,18 +454,103 @@ export default function HomePage({ searchParams }: HomePageProps) {
           </div>
         </section>
 
-        <footer className="flex flex-col items-start gap-3 border-t border-slate-200 pt-8 text-xs text-slate-500 dark:border-white/10 dark:text-slate-400 sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} Trackly Inc. All rights reserved.</p>
-          <div className="flex gap-4">
-            <Link href="/login" className="hover:text-slate-700 dark:hover:text-white">
-              로그인
-            </Link>
-            <Link href="/register" className="hover:text-slate-700 dark:hover:text-white">
-              회원가입
-            </Link>
-            <a href="#analytics" className="hover:text-slate-700 dark:hover:text-white">
-              기능 살펴보기
-            </a>
+        <footer className="border-t border-slate-200 pt-10 text-sm text-slate-600 dark:border-white/10 dark:text-slate-300">
+          <div className="grid gap-8 lg:grid-cols-[minmax(0,1.3fr)_repeat(2,minmax(0,1fr))]">
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-brand/10 text-base font-semibold text-brand">
+                  TS
+                </span>
+                <div className="flex flex-col">
+                  <span className="text-lg font-semibold text-slate-900 dark:text-white">Trackly Platform</span>
+                  <span className="text-xs uppercase tracking-[0.28em] text-slate-400 dark:text-slate-500">
+                    PLAN · SYNC · SCALE
+                  </span>
+                </div>
+              </div>
+              <p className="max-w-md text-xs text-slate-500 dark:text-slate-400">
+                Trackly는 프로젝트 일정과 실행을 하나의 하이브리드 워크스페이스에서 운영하도록 설계된 SaaS입니다. 캘린더-보드
+                동기화, 자동화 레시피, 고급 권한 매트릭스로 글로벌 팀 협업을 지원합니다.
+              </p>
+            </div>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400 dark:text-slate-500">
+                주요 기능
+              </p>
+              <ul className="mt-4 flex flex-col gap-2 text-xs text-slate-500 dark:text-slate-400">
+                <li>
+                  <a href="#workspace" className="hover:text-slate-800 dark:hover:text-white">
+                    하이브리드 캘린더 & 보드
+                  </a>
+                </li>
+                <li>
+                  <a href="#analytics" className="hover:text-slate-800 dark:hover:text-white">
+                    실시간 인사이트 & 리포트
+                  </a>
+                </li>
+                <li>
+                  <a href="#guide" className="hover:text-slate-800 dark:hover:text-white">
+                    자동화 온보딩 플로우
+                  </a>
+                </li>
+                <li>
+                  <a href="#use-cases" className="hover:text-slate-800 dark:hover:text-white">
+                    산업별 운영 시나리오
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400 dark:text-slate-500">
+                Sitemap
+              </p>
+              <ul className="mt-4 flex flex-col gap-2 text-xs text-slate-500 dark:text-slate-400">
+                <li>
+                  <Link href="/" className="hover:text-slate-800 dark:hover:text-white">
+                    홈
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/projects" className="hover:text-slate-800 dark:hover:text-white">
+                    내 프로젝트 관리
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/mypage" className="hover:text-slate-800 dark:hover:text-white">
+                    마이페이지
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/onboarding" className="hover:text-slate-800 dark:hover:text-white">
+                    온보딩
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/login" className="hover:text-slate-800 dark:hover:text-white">
+                    로그인
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/register" className="hover:text-slate-800 dark:hover:text-white">
+                    회원가입
+                  </Link>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div className="mt-8 flex flex-col gap-2 border-t border-slate-200 pt-4 text-xs text-slate-500 dark:border-white/10 dark:text-slate-400 sm:flex-row sm:items-center sm:justify-between">
+            <p>© {new Date().getFullYear()} Trackly Inc. All rights reserved.</p>
+            <div className="flex flex-wrap items-center gap-4">
+              <a href="#pricing" className="hover:text-slate-700 dark:hover:text-white">
+                요금제
+              </a>
+              <a href="#guide" className="hover:text-slate-700 dark:hover:text-white">
+                시작 가이드
+              </a>
+              <a href="#story" className="hover:text-slate-700 dark:hover:text-white">
+                로드맵
+              </a>
+            </div>
           </div>
         </footer>
       </div>
@@ -464,106 +558,290 @@ export default function HomePage({ searchParams }: HomePageProps) {
   );
 }
 
-type ProfileSummaryProps = {
+type WorkspaceAccessCardProps = {
   user: UserProfile;
-  onRefresh: () => void;
-  onLogout: () => void;
-  refreshing: boolean;
 };
 
-function ProfileSummary({ user, onRefresh, onLogout, refreshing }: ProfileSummaryProps) {
+function WorkspaceAccessCard({ user }: WorkspaceAccessCardProps) {
   return (
-    <Card>
+    <Card className="lg:w-full">
       <CardHeader
-        title={`안녕하세요, ${user.nickname || user.name}님`}
-        subtitle="Trackly 워크스페이스에 연결되었습니다."
-        action={
-          <Button variant="outline" onClick={onLogout}>
-            로그아웃
-          </Button>
-        }
+        title={`${user.nickname || user.name}님, 환영합니다`}
+        subtitle="워크스페이스를 전환하거나 프로필을 관리해 보세요."
       />
       <CardBody className="gap-5">
-        <div className="grid gap-4">
-          <ProfileField label="이메일" value={user.email} />
-          <ProfileField label="생년월일" value={new Date(user.birthday).toLocaleDateString()} />
-          <ProfileField label="자기소개" value={user.introduce || "소개를 추가해 보세요."} multiLine />
+        <div className="space-y-2 text-sm text-slate-600 dark:text-slate-300">
+          <p>
+            Trackly에서는 여러 워크스페이스를 만들고 프로젝트별로 빠르게 오가며 팀을 운영할 수 있습니다. 계정 정보는
+            마이페이지에서 손쉽게 확인하고 업데이트하세요.
+          </p>
+          <p className="rounded-xl border border-slate-200/70 bg-white px-4 py-3 text-xs leading-relaxed text-slate-500 transition-colors duration-300 dark:border-white/10 dark:bg-white/5 dark:text-slate-400">
+            베타 기간 동안은 모든 워크스페이스가 PRO 권한으로 제공되어 자동화, 고급 권한 매트릭스, 보드 인사이트 기능을
+            제한 없이 사용할 수 있습니다.
+          </p>
         </div>
-        <Button variant="secondary" onClick={onRefresh} loading={refreshing}>
-          프로필 동기화
-        </Button>
-      </CardBody>
-    </Card>
-  );
-}
-
-type ProfileFieldProps = {
-  label: string;
-  value: string;
-  multiLine?: boolean;
-};
-
-function ProfileField({ label, value, multiLine = false }: ProfileFieldProps) {
-  return (
-    <div className="flex flex-col gap-1">
-      <span className="text-xs uppercase tracking-[0.28em] text-slate-400 dark:text-slate-500">{label}</span>
-      <span
-        className={`rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 transition-colors duration-300 dark:border-white/10 dark:bg-white/5 dark:text-slate-100 ${
-          multiLine ? "min-h-[72px]" : ""
-        }`}
-      >
-        {value}
-      </span>
-    </div>
-  );
-}
-
-function QuickStartCard() {
-  return (
-    <Card>
-      <CardHeader
-        title="Trackly 시작 가이드"
-        subtitle="OAuth 기반 소셜 로그인으로 30초 만에 팀을 초대하세요."
-      />
-      <CardBody className="gap-5">
-        <ol className="flex flex-col gap-4 text-sm text-slate-600 dark:text-slate-300">
-          <li className="flex items-start gap-3">
-            <span className="mt-0.5 inline-flex h-6 w-6 items-center justify-center rounded-full bg-brand/10 text-xs font-semibold text-brand">
-              1
-            </span>
-            <p>
-              Google 또는 Kakao로 로그인하면 토큰이 즉시 발급되고, 리디렉션된 대시보드에서 워크스페이스를 설정합니다.
-            </p>
-          </li>
-          <li className="flex items-start gap-3">
-            <span className="mt-0.5 inline-flex h-6 w-6 items-center justify-center rounded-full bg-brand/10 text-xs font-semibold text-brand">
-              2
-            </span>
-            <p>팀 구성원을 초대하고 역할을 지정해 프로젝트 참여 범위를 제어하세요.</p>
-          </li>
-          <li className="flex items-start gap-3">
-            <span className="mt-0.5 inline-flex h-6 w-6 items-center justify-center rounded-full bg-brand/10 text-xs font-semibold text-brand">
-              3
-            </span>
-            <p>캘린더와 보드에서 태스크를 드래그&드롭하며 일정 충돌 없이 실행 계획을 세웁니다.</p>
-          </li>
-        </ol>
         <div className="flex flex-wrap gap-3">
-          <Link
-            href="/login"
-            className="inline-flex items-center gap-2 rounded-full bg-brand text-sm font-semibold text-white shadow-glow transition hover:bg-brand-light"
-          >
-            소셜 계정으로 로그인
-          </Link>
-          <Link
-            href="/onboarding"
-            className="inline-flex items-center gap-2 rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-white dark:border-slate-600 dark:text-slate-100 dark:hover:bg-slate-800"
-          >
-            온보딩 계속하기
-          </Link>
+          <Button asChild>
+            <Link href="/projects">내 프로젝트 관리</Link>
+          </Button>
+          <Button variant="outline" asChild>
+            <Link href="/mypage">마이페이지</Link>
+          </Button>
+          <Button variant="ghost" asChild>
+            <Link href="/onboarding">새 워크스페이스 설정</Link>
+          </Button>
         </div>
       </CardBody>
     </Card>
+  );
+}
+
+function BetaAccessCard() {
+  return (
+    <Card className="lg:w-full">
+      <CardHeader
+        title="베타 액세스 안내"
+        subtitle="Trackly의 모든 PRO 기능을 출시 전까지 무료로 체험할 수 있습니다."
+      />
+      <CardBody className="gap-4 text-sm text-slate-600 dark:text-slate-300">
+        <p>
+          OAuth 기반 로그인으로 몇 초 만에 워크스페이스를 개설하고, 자동화·고급 권한·리포트 기능까지 즉시 활성화해 팀 협업
+          환경을 구축해 보세요.
+        </p>
+        <ul className="flex flex-col gap-2 text-xs text-slate-500 dark:text-slate-400">
+          <li>• 워크스페이스 수와 멤버 수 제한 없이 PRO 기능 사용</li>
+          <li>• Slack, 캘린더, Webhook 등 외부 통합 사전 체험</li>
+          <li>• 정식 출시 알림 및 베타 참여자 전용 혜택 우선 제공</li>
+        </ul>
+        <div className="flex flex-wrap gap-3">
+          <Button asChild>
+            <Link href="/register">무료로 워크스페이스 만들기</Link>
+          </Button>
+          <Button variant="outline" asChild>
+            <Link href="/login">이미 계정이 있다면 로그인</Link>
+          </Button>
+        </div>
+      </CardBody>
+    </Card>
+  );
+}
+
+const GETTING_STARTED_STEPS = [
+  {
+    title: "소셜 계정 연결",
+    description: "Google·Kakao 계정으로 로그인하면 즉시 토큰이 발급되고, 기본 보안 정책이 적용된 상태로 대시보드에 진입합니다.",
+    badge: "Step 1"
+  },
+  {
+    title: "워크스페이스 설계",
+    description: "팀 이름, URL 식별자, 핵심 역할을 정의하고 기본 뷰(캘린더/보드)를 선택하면 Trackly가 맞춤 템플릿을 제공합니다.",
+    badge: "Step 2"
+  },
+  {
+    title: "자동화 & 권한 구성",
+    description: "Webhook, 반복 태스크, 권한 매트릭스를 세팅해 운영 흐름을 고도화하고, 필요 시 Slack/캘린더 통합까지 바로 연결하세요.",
+    badge: "Step 3"
+  }
+] as const;
+
+type GettingStartedSectionProps = {
+  unauthenticated: boolean;
+};
+
+function GettingStartedSection({ unauthenticated }: GettingStartedSectionProps) {
+  return (
+    <section id="guide" className="space-y-8">
+      <div className="mx-auto max-w-3xl space-y-3 text-center">
+        <span className="inline-flex items-center justify-center rounded-full bg-brand/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.28em] text-brand dark:bg-brand/15 dark:text-brand-light">
+          GUIDED ONBOARDING
+        </span>
+        <h2 className="text-3xl font-semibold text-slate-900 dark:text-white">Trackly 시작 가이드</h2>
+        <p className="text-sm text-slate-500 dark:text-slate-400">
+          표준화된 3단계 온보딩 플로우로 워크스페이스를 신속하게 구성할 수 있습니다. 각 단계는 프로젝트 운영에 필요한 최소
+          정보를 묻고, 입력 즉시 자동화 권장 설정을 제안합니다.
+        </p>
+      </div>
+      <div className="grid gap-4 md:grid-cols-3">
+        {GETTING_STARTED_STEPS.map((step) => (
+          <Card key={step.title} className="border-slate-200/80 bg-white/90 transition-colors duration-300 dark:border-white/10 dark:bg-white/5">
+            <CardBody className="gap-4">
+              <span className="inline-flex w-fit items-center rounded-full bg-brand/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.28em] text-brand dark:bg-brand/15 dark:text-brand-light">
+                {step.badge}
+              </span>
+              <div className="space-y-2">
+                <p className="text-lg font-semibold text-slate-900 dark:text-white">{step.title}</p>
+                <p className="text-sm text-slate-600 dark:text-slate-300">{step.description}</p>
+              </div>
+            </CardBody>
+          </Card>
+        ))}
+      </div>
+      <div className="flex flex-wrap justify-center gap-3 text-sm">
+        {unauthenticated ? (
+          <>
+            <Link
+              href="/register"
+              className="inline-flex items-center gap-2 rounded-full bg-brand px-5 py-2 font-semibold text-white shadow-glow transition hover:bg-brand-light"
+            >
+              지금 무료로 시작하기
+            </Link>
+            <Link
+              href="/login"
+              className="inline-flex items-center gap-2 rounded-full border border-slate-300 px-5 py-2 font-semibold text-slate-700 transition hover:bg-white dark:border-slate-600 dark:text-slate-100 dark:hover:bg-slate-800"
+            >
+              기존 계정 로그인
+            </Link>
+          </>
+        ) : (
+          <>
+            <Link
+              href="/projects"
+              className="inline-flex items-center gap-2 rounded-full bg-brand px-5 py-2 font-semibold text-white shadow-glow transition hover:bg-brand-light"
+            >
+              내 워크스페이스 확인
+            </Link>
+            <Link
+              href="/onboarding"
+              className="inline-flex items-center gap-2 rounded-full border border-slate-300 px-5 py-2 font-semibold text-slate-700 transition hover:bg-white dark:border-slate-600 dark:text-slate-100 dark:hover:bg-slate-800"
+            >
+              새 워크스페이스 만들기
+            </Link>
+          </>
+        )}
+      </div>
+      <p className="text-center text-xs text-slate-400 dark:text-slate-500">
+        모든 신규 워크스페이스는 베타 기간 동안 PRO 권한으로 제공되며, 설정한 자동화 규칙과 권한은 정식 출시 이후에도
+        그대로 유지됩니다.
+      </p>
+    </section>
+  );
+}
+
+const USE_CASES = [
+  {
+    title: "제품 · 엔지니어링 스쿼드",
+    description:
+      "스프린트·릴리즈 캘린더와 태스크 보드를 연동해 일정 충돌을 최소화하고, QA·배포 체크리스트를 자동 생성합니다."
+  },
+  {
+    title: "클라이언트 프로젝트 팀",
+    description:
+      "고객사별 워크스페이스를 분리 관리하면서 진행 현황 리포트를 실시간으로 공유하고, SLA 지표를 대시보드로 시각화합니다."
+  },
+  {
+    title: "운영 · CS 조직",
+    description:
+      "반복 이슈를 자동 티켓화하고, 권한 매트릭스로 외부 파트너 접근을 제어해 확장 가능한 지원 프로세스를 구축합니다."
+  }
+] as const;
+
+function UseCaseSection() {
+  return (
+    <section id="use-cases" className="space-y-8">
+      <div className="mx-auto max-w-3xl space-y-3 text-center">
+        <span className="inline-flex items-center justify-center rounded-full bg-slate-900 px-4 py-1 text-xs font-semibold uppercase tracking-[0.28em] text-white dark:bg-white/10 dark:text-white">
+          OPERATION PLAYBOOK
+        </span>
+        <h2 className="text-3xl font-semibold text-slate-900 dark:text-white">Trackly 활용 시나리오</h2>
+        <p className="text-sm text-slate-500 dark:text-slate-400">
+          다양한 조직이 Trackly를 통해 프로젝트, 일정, 커뮤니케이션을 통합 운영합니다. 아래 시나리오는 베타 고객과의 협업을
+          통해 검증된 실사용 사례입니다.
+        </p>
+      </div>
+      <div className="grid gap-4 md:grid-cols-3">
+        {USE_CASES.map((useCase) => (
+          <Card
+            key={useCase.title}
+            className="border-slate-200/80 bg-gradient-to-br from-white via-white/90 to-slate-50/60 transition-colors duration-300 dark:border-white/10 dark:bg-white/5"
+          >
+            <CardBody className="gap-3">
+              <p className="text-lg font-semibold text-slate-900 dark:text-white">{useCase.title}</p>
+              <p className="text-sm text-slate-600 dark:text-slate-300">{useCase.description}</p>
+            </CardBody>
+          </Card>
+        ))}
+      </div>
+      <div className="mx-auto max-w-4xl rounded-2xl border border-brand/40 bg-brand/10 px-6 py-5 text-center text-sm text-brand dark:border-brand/60 dark:bg-brand/20 dark:text-brand-light">
+        베타 기간에는 자동화 레시피, 고급 권한 매트릭스, 실시간 인사이트 모듈을 제한 없이 사용할 수 있으며, 고객 성공팀이
+        워크플로우 설계 세션을 무료로 지원합니다.
+      </div>
+    </section>
+  );
+}
+
+type PricingPlan = {
+  name: string;
+  price: string;
+  description: string;
+  highlight?: boolean;
+};
+
+const PRICING_PLANS: PricingPlan[] = [
+  {
+    name: "Starter (출시 예정)",
+    price: "₩0 /멤버·월",
+    description: "개인 프로젝트 또는 파일럿 팀에게 적합한 기본 캘린더·보드 기능"
+  },
+  {
+    name: "Pro (출시 예정)",
+    price: "₩19,000 /멤버·월",
+    description: "자동화, 고급 권한, 인사이트 리포트, 통합 관리 기능을 포함한 핵심 플랜",
+    highlight: true
+  },
+  {
+    name: "Enterprise",
+    price: "견적 상담",
+    description: "SAML SSO, 감사 로그, 데이터 레지던시 등 엔터프라이즈 요구에 맞춘 맞춤형 계약"
+  }
+];
+
+function PricingOverviewSection() {
+  return (
+    <section id="pricing" className="space-y-8">
+      <div className="mx-auto max-w-3xl space-y-3 text-center">
+        <span className="inline-flex items-center justify-center rounded-full bg-emerald-500/15 px-4 py-1 text-xs font-semibold uppercase tracking-[0.28em] text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-200">
+          BETA BENEFIT
+        </span>
+        <h2 className="text-3xl font-semibold text-slate-900 dark:text-white">요금제 & 베타 혜택</h2>
+        <p className="text-sm text-slate-500 dark:text-slate-400">
+          출시 후에는 워크스페이스 규모와 보안 요구에 맞춰 요금제를 선택할 수 있습니다. 현재는 모든 계정이 PRO 권한으로
+          동작하며, 정식 서비스 전 전환에 대한 안내를 사전에 드립니다.
+        </p>
+      </div>
+      <div className="grid gap-4 md:grid-cols-3">
+        {PRICING_PLANS.map((plan) => (
+          <Card
+            key={plan.name}
+            className={`border px-5 py-6 transition-colors duration-300 ${
+              plan.highlight
+                ? "border-brand bg-brand/10 text-brand dark:border-brand/60 dark:bg-brand/15 dark:text-brand-light"
+                : "border-slate-200/80 bg-white/90 dark:border-white/10 dark:bg-white/5"
+            }`}
+          >
+            <div className="flex flex-col gap-3">
+              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-slate-400 dark:text-slate-500">{plan.price}</p>
+              <p className={`text-xl font-semibold ${plan.highlight ? "text-brand dark:text-brand-light" : "text-slate-900 dark:text-white"}`}>
+                {plan.name}
+              </p>
+              <p
+                className={`text-sm ${
+                  plan.highlight ? "text-brand dark:text-brand-light" : "text-slate-600 dark:text-slate-300"
+                }`}
+              >
+                {plan.description}
+              </p>
+            </div>
+          </Card>
+        ))}
+      </div>
+      <div className="mx-auto max-w-4xl space-y-3 rounded-2xl border border-emerald-400/40 bg-emerald-100/60 px-6 py-5 text-center text-sm text-emerald-700 dark:border-emerald-400/30 dark:bg-emerald-500/10 dark:text-emerald-200">
+        <p>베타 사용자 전환 혜택</p>
+        <p className="text-xs">
+          베타 기간에 개설한 워크스페이스는 정식 출시 후 90일간 PRO 요금이 자동 연장되며, 아카이브 없이 모든 데이터와 자동화
+          설정을 그대로 유지합니다. 엔터프라이즈 기능에 관심 있는 경우 별도 상담을 예약해 주세요.
+        </p>
+      </div>
+    </section>
   );
 }
 
