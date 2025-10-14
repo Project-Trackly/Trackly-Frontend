@@ -310,6 +310,9 @@ function WorkspaceCard({ workspace }: WorkspaceCardProps) {
           {workspace.createdAt ? <span>생성 {formatDateString(workspace.createdAt)}</span> : null}
         </div>
         <div className="flex flex-wrap gap-3">
+          <Button asChild>
+            <Link href={`/projects/${workspace.id}/3d`}>3D 뷰</Link>
+          </Button>
           <Button variant="secondary" asChild>
             <Link href="/onboarding">워크스페이스 설정</Link>
           </Button>
