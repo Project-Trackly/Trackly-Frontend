@@ -1,0 +1,82 @@
+name: "Feature"
+description: "새로운 기능 추가"
+labels: ["✨ feat"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 🆕 Feature 요청 템플릿
+        기능 개발 전 필요한 정보를 아래 항목에 맞춰 작성해 주세요.
+
+  - type: textarea
+    attributes:
+      label: 📄 설명
+      description: 어떤 기능인지 명확하게 작성해 주세요.
+      placeholder: 예) 사용자 알림 기능을 추가합니다. 특정 조건에서 이메일 또는 앱 푸시를 보냅니다.
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: ✅ 작업할 내용
+      description: 가능한 한 세분화해서 작성해 주세요.
+      placeholder: |
+        - [ ] 컨트롤러 생성
+        - [ ] 서비스 로직 구현
+        - [ ] 테스트 코드 작성
+        - [ ] 문서화
+    validations:
+      required: true
+
+  - type: checkboxes
+    attributes:
+      label: 📌 포함될 작업 범위
+      description: 이번 작업에 포함되는 항목을 선택해 주세요.
+      options:
+        - label: 프론트엔드 UI 수정
+        - label: 백엔드 API 추가
+        - label: DB 스키마 변경
+        - label: 테스트 코드 작성
+        - label: 문서/README 수정
+
+  - type: dropdown
+    attributes:
+      label: 🎯 우선순위
+      description: 이슈의 우선순위를 설정해 주세요.
+      options:
+        - 🔴 긴급
+        - 🟠 높음
+        - 🟡 보통
+        - 🟢 낮음
+
+  - type: input
+    attributes:
+      label: 📆 예상 완료일
+      description: YYYY-MM-DD 형식으로 입력해 주세요.
+      placeholder: "2025-07-01"
+
+  - type: input
+    attributes:
+      label: 담당자
+      description: "GitHub ID로 입력해 주세요. 예: @ted0930"
+      placeholder: "@your-github-id"
+    validations:
+      required: true
+
+  - type: input
+    attributes:
+      label: 🔄 관련 이슈
+      description: "연결할 이슈 번호를 입력하세요. 예: #123"
+      placeholder: "#123"
+
+  - type: textarea
+    attributes:
+      label: 📚 참고 자료
+      description: 설계 문서, 레퍼런스 링크 등 참고할 수 있는 자료가 있다면 적어 주세요.
+      placeholder: "예: https://example.com/design-doc"
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        작성해 주셔서 감사합니다! 🙌 이슈가 triage 되면 label 및 담당자가 지정됩니다.

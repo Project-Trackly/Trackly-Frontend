@@ -1,0 +1,55 @@
+name: "Docs"
+description: "📝 문서 작성 또는 수정 요청"
+labels: ["📝 docs"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 📝 Docs 요청 템플릿
+        문서화가 필요한 항목을 구체적으로 작성해 주세요.
+
+  - type: textarea
+    attributes:
+      label: 📄 문서화할 내용
+      description: 어떤 내용을 문서화하거나 수정해야 하는지 구체적으로 작성해 주세요.
+      placeholder: 예) API 사용법 문서 / README 내 설치 가이드 / Onboarding 문서 추가
+    validations:
+      required: true
+
+  - type: checkboxes
+    attributes:
+      label: 📌 문서 유형
+      description: 어떤 종류의 문서인지 선택해 주세요.
+      options:
+        - label: 사용자 가이드
+        - label: API 문서
+        - label: 시스템 아키텍처
+        - label: 환경 설정 설명
+        - label: README 개선
+        - label: 기타
+
+  - type: textarea
+    attributes:
+      label: 📎 관련 위치 또는 링크
+      description: 기존 문서의 위치나 수정 대상 링크가 있다면 작성해 주세요.
+      placeholder: 예) docs/api.md, README.md, Notion 링크 등
+
+  - type: input
+    attributes:
+      label: 담당자
+      description: "GitHub ID로 입력해 주세요. 예: @your-id"
+      placeholder: "@username"
+    validations:
+      required: true
+
+  - type: input
+    attributes:
+      label: 🔄 관련 이슈
+      description: "연결할 이슈 번호를 입력하세요. 예: #321"
+      placeholder: "#321"
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        감사합니다! 문서 작업은 반영 후 리뷰 요청이 이루어집니다.

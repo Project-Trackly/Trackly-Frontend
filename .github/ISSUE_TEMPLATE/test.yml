@@ -1,0 +1,55 @@
+name: "Test"
+description: "🧪 테스트 코드 작성 또는 개선"
+labels: ["🧪 test"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 🧪 Test 작성/수정 요청 템플릿
+        테스트가 필요한 기능이나 수정할 테스트를 아래에 상세히 작성해 주세요.
+
+  - type: textarea
+    attributes:
+      label: ✅ 테스트 대상
+      description: 어떤 기능/컴포넌트/API에 대한 테스트인지 작성해 주세요.
+      placeholder: 예) `UserService`의 이메일 인증 로직, `/api/login` endpoint
+    validations:
+      required: true
+
+  - type: checkboxes
+    attributes:
+      label: 📌 테스트 유형
+      description: 테스트의 종류를 선택해 주세요.
+      options:
+        - label: 단위 테스트 (Unit Test)
+        - label: 통합 테스트 (Integration Test)
+        - label: E2E 테스트
+        - label: Mock 기반 테스트
+        - label: UI 테스트
+        - label: 기타
+
+  - type: textarea
+    attributes:
+      label: ✨ 테스트 목적 또는 이슈
+      description: 어떤 문제를 예방하거나 어떤 흐름을 검증하기 위함인지 설명해 주세요.
+      placeholder: 예) 로그인 실패 케이스에서 올바른 에러 메시지가 반환되는지 확인하고자 함
+
+  - type: input
+    attributes:
+      label: 담당자
+      description: "GitHub ID로 입력해 주세요. 예: @your-id"
+      placeholder: "@username"
+    validations:
+      required: true
+
+  - type: input
+    attributes:
+      label: 🔄 관련 이슈
+      description: "연결할 이슈 번호를 입력하세요. 예: #999"
+      placeholder: "#999"
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        감사합니다! 테스트 코드는 리뷰 후 병합됩니다.

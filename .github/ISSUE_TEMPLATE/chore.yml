@@ -1,0 +1,43 @@
+name: "Chore"
+description: "⚙️ 빌드 설정, 환경 세팅, 패키지 관리 등"
+labels: ["⚙️ chore"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## ⚙️ Chore 요청 템플릿
+        설정, 빌드, 환경 구성과 관련된 작업을 작성해 주세요.
+
+  - type: textarea
+    attributes:
+      label: ✨ 세팅할 항목
+      description: 어떤 설정/환경 구성/패키지 변경이 필요한지 상세히 작성해 주세요.
+      placeholder: 예) Redis 설정 추가, ELK 스택 구성, ESLint 규칙 변경 등
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: 📕 참고 자료
+      description: 문서, 링크, 레퍼런스가 있다면 첨부해 주세요.
+      placeholder: 예) https://eslint.org/docs/latest/
+
+  - type: input
+    attributes:
+      label: 담당자
+      description: "GitHub ID로 입력해 주세요. 예: @your-id"
+      placeholder: "@username"
+    validations:
+      required: true
+
+  - type: input
+    attributes:
+      label: 🔄 관련 이슈
+      description: "연결할 이슈 번호를 입력하세요. 예: #789"
+      placeholder: "#789"
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        감사합니다! 설정 작업은 반영되면 확인 요청이 이루어집니다.

@@ -20,3 +20,11 @@ pnpm-debug.log*
 .idea/
 .vscode/
 .DS_Store
+
+# ignore sensitive runtime files
+.env
+*.key
+*.pem
+/tmp/
+/logs/
+/outputs/

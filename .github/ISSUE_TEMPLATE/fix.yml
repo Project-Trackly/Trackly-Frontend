@@ -1,0 +1,43 @@
+name: "Fix"
+description: "🚨 버그 또는 에러 수정"
+labels: ["🚨 fix"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 🐛 Fix 요청 템플릿
+        발견된 문제를 명확하게 정리해 주세요.
+
+  - type: textarea
+    attributes:
+      label: 🤔 오류 내용
+      description: 어떤 오류인지 명확하게 기술해 주세요. 에러 로그와 함께 작성해 주세요.
+      placeholder: 예) 로그인 시도 시 500 에러 발생. 콘솔에 "undefined userId" 출력됨
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: ⚠ 에러 캡처
+      description: 문제가 발생한 화면 또는 콘솔의 스크린샷이 있다면 첨부해 주세요.
+      placeholder: 이미지 drag & drop 또는 링크 삽입
+
+  - type: input
+    attributes:
+      label: 담당자
+      description: "GitHub ID로 입력해 주세요. 예: @your-id"
+      placeholder: "@username"
+    validations:
+      required: true
+
+  - type: input
+    attributes:
+      label: 🔄 관련 이슈
+      description: "연결할 이슈 번호를 입력하세요. 예: #123"
+      placeholder: "#123"
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        감사합니다! 해당 버그는 triage 후 할당됩니다.
