@@ -311,13 +311,13 @@ function WorkspaceCard({ workspace }: WorkspaceCardProps) {
         </div>
         <div className="flex flex-wrap gap-3">
           <Button asChild>
-            <Link href={`/projects/${workspace.id}/3d`}>3D 뷰</Link>
+            <Link href={`/projects/${workspace.id}`}>태스크 관리</Link>
           </Button>
           <Button variant="secondary" asChild>
-            <Link href="/onboarding">워크스페이스 설정</Link>
+            <Link href={`/projects/${workspace.id}/3d`}>3D 뷰</Link>
           </Button>
           <Button variant="outline" asChild>
-            <Link href="/mypage">멤버 권한 관리</Link>
+            <Link href="/onboarding">워크스페이스 설정</Link>
           </Button>
         </div>
       </CardBody>

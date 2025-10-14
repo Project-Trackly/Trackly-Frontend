@@ -8,6 +8,7 @@
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { tokenStorage } from '@/lib/token-storage';
 import type {
   Task3D,
   Tasks3DResponse,
@@ -21,6 +22,17 @@ import type {
  * Falls back to localhost for development
  */
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080';
+
+/**
+ * Get authorization headers with access token
+ */
+function getAuthHeaders(): HeadersInit {
+  const token = tokenStorage.getAccessToken();
+  return {
+    'Content-Type': 'application/json',
+    ...(token && { 'Authorization': `Bearer ${token}` }),
+  };
+}
 
 /**
  * Fetch tasks for 3D visualization
@@ -44,11 +56,7 @@ export function useTasks3D(
       const response = await fetch(
         `${API_BASE_URL}/api/projects/${projectId}/tasks/3d?page=${page}&size=${size}`,
         {
-          headers: {
-            'Content-Type': 'application/json',
-            // TODO: Add Authorization header with JWT token
-            // 'Authorization': `Bearer ${getToken()}`,
-          },
+          headers: getAuthHeaders(),
         }
       );
       
@@ -89,11 +97,7 @@ export function useUpdateTaskPriority(projectId: string) {
         `${API_BASE_URL}/api/projects/${projectId}/tasks/${taskId}/priority`,
         {
           method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-            // TODO: Add Authorization header
-            // 'Authorization': `Bearer ${getToken()}`,
-          },
+          headers: getAuthHeaders(),
           body: JSON.stringify({ priority }),
         }
       );
@@ -167,11 +171,7 @@ export function useTaskClusters(
       const response = await fetch(
         `${API_BASE_URL}/api/projects/${projectId}/tasks/clusters?by=${clusterBy}`,
         {
-          headers: {
-            'Content-Type': 'application/json',
-            // TODO: Add Authorization header
-            // 'Authorization': `Bearer ${getToken()}`,
-          },
+          headers: getAuthHeaders(),
         }
       );
       
@@ -209,11 +209,7 @@ export function usePrefetchTasks3D(projectId: string) {
         const response = await fetch(
           `${API_BASE_URL}/api/projects/${projectId}/tasks/3d?page=0&size=100`,
           {
-            headers: {
-              'Content-Type': 'application/json',
-              // TODO: Add Authorization header
-              // 'Authorization': `Bearer ${getToken()}`,
-            },
+            headers: getAuthHeaders(),
           }
         );
         

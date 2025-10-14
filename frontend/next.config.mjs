@@ -4,18 +4,24 @@ const nextConfig = {
   experimental: {
     typedRoutes: true
   },
-  transpilePackages: ["@repo/ui"],
+  transpilePackages: ["@repo/ui", "@react-three/fiber", "@react-three/drei", "three"],
   env: {
     NEXT_PUBLIC_API_BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL
   },
-  // T040: Bundle optimization
+  // T040: Bundle optimization  
   webpack: (config, { isServer }) => {
-    // Optimize Three.js bundle size
+    // Configure Three.js module resolution for better compatibility
     if (!isServer) {
-      config.resolve.alias = {
-        ...config.resolve.alias,
-        // Use ES modules version of Three.js for better tree-shaking
-        'three': 'three/build/three.module.js',
+      config.resolve.extensionAlias = {
+        '.js': ['.js', '.ts', '.tsx'],
+        '.mjs': ['.mjs', '.mts'],
+      };
+      
+      // Ensure proper ESM handling for Three.js
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        path: false,
       };
     }
     return config;

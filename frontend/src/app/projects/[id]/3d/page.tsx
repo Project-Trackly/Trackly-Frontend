@@ -1,13 +1,13 @@
 /**
  * 3D Task Visualization Page
- * 
+ *
  * T018: Next.js App Router page for 3D task view
  * Dynamic route: /projects/[id]/3d
  */
 
 'use client';
 
-import { Suspense, use } from 'react';
+import { Suspense } from 'react';
 import dynamic from 'next/dynamic';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
@@ -30,6 +30,24 @@ const TaskVisualization3D = dynamic(
   }
 );
 
+// Simple test component for debugging
+const SimpleTest3D = dynamic(
+  () => import('@/components/3d/SimpleTest3D').then((mod) => mod.SimpleTest3D),
+  {
+    ssr: false,
+    loading: () => <div>Loading Test 3D...</div>,
+  }
+);
+
+// Simplified TaskVisualization for debugging
+const TaskVisualizationSimple = dynamic(
+  () => import('@/components/3d/TaskVisualizationSimple').then((mod) => mod.TaskVisualizationSimple),
+  {
+    ssr: false,
+    loading: () => <div>Loading Simple Task View...</div>,
+  }
+);
+
 // Create QueryClient instance for TanStack Query
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -42,17 +60,17 @@ const queryClient = new QueryClient({
 });
 
 interface PageProps {
-  params: Promise<{ id: string }>;
+  params: { id: string };
 }
 
 /**
  * 3D Task View Page Component
  * 
  * This is the main entry point for 3D task visualization.
- * Uses Next.js 15 async params pattern.
+ * Compatible with Next.js 14 App Router.
  */
 export default function Page3D({ params }: PageProps) {
-  const { id: projectId } = use(params);
+  const { id: projectId } = params;
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -90,7 +108,9 @@ export default function Page3D({ params }: PageProps) {
                 </div>
               }
             >
-              <TaskVisualization3D projectId={projectId} />
+              <TaskVisualizationSimple projectId={projectId} />
+              {/* <SimpleTest3D /> */}
+              {/* <TaskVisualization3D projectId={projectId} /> */}
             </Suspense>
           </WebGLDetector>
         </div>
