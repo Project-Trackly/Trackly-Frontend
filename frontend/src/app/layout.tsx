@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { QueryProvider } from "@/providers/query-provider";
 
 const siteUrl = "https://trackly.app";
 
@@ -74,10 +75,12 @@ export default function RootLayout({
     <html lang="ko" suppressHydrationWarning>
       <body className="bg-slate-50 text-slate-900 transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100">
         <ThemeProvider>
-          <>
-            {children}
-            <ThemeToggle />
-          </>
+          <QueryProvider>
+            <>
+              {children}
+              <ThemeToggle />
+            </>
+          </QueryProvider>
         </ThemeProvider>
       </body>
     </html>
