@@ -28,14 +28,21 @@ export function detectWebGLCapability(): WebGLCapability {
   }
   
   // Fallback to WebGL 1.0
-  const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+  const gl = canvas.getContext('webgl') as (WebGLRenderingContext | null);
   if (gl) {
-    const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+    // Note: 'getExtension' and 'getParameter' only exist on WebGLRenderingContext, not others.
+    const debugInfo = gl.getExtension('WEBGL_debug_renderer_info')
+      ? gl.getExtension('WEBGL_debug_renderer_info')
+      : undefined;
+
     return {
       hasWebGL: true,
       hasWebGL2: false,
-      renderer: debugInfo ? gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) : undefined,
-      version: gl.getParameter(gl.VERSION),
+      renderer:
+        debugInfo && gl.getParameter
+          ? gl.getParameter((debugInfo as any).UNMASKED_RENDERER_WEBGL)
+          : undefined,
+      version: gl.getParameter ? gl.getParameter(gl.VERSION) : undefined,
     };
   }
   

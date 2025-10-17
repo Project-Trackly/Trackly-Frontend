@@ -16,12 +16,12 @@ interface TaskVisualizationSimpleProps {
 
 // 임시 태스크 데이터
 const mockTasks = [
-  { id: 1, title: 'Task 1', priority: 80, position: [0, 0, 0] },
-  { id: 2, title: 'Task 2', priority: 60, position: [2, 1, 0] },
-  { id: 3, title: 'Task 3', priority: 40, position: [-2, -1, 0] },
+  { id: 1, title: 'Task 1', priority: 80, position: [0, 0, 0] as [number, number, number] },
+  { id: 2, title: 'Task 2', priority: 60, position: [2, 1, 0] as [number, number, number] },
+  { id: 3, title: 'Task 3', priority: 40, position: [-2, -1, 0] as [number, number, number] },
 ];
 
-function TaskBox({ task, position }: { task: any; position: number[] }) {
+function TaskBox({ task, position }: { task: any; position: [number, number, number] }) {
   const getPriorityColor = (priority: number) => {
     if (priority >= 70) return '#EF4444'; // Red
     if (priority >= 50) return '#F59E0B'; // Amber

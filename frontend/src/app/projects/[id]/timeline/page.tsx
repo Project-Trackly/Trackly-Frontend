@@ -14,6 +14,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardHeader, CardBody } from '@repo/ui';
 import { Plus, Box, List, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTasks3D } from '@/services/api/tasks3d';
+import type { Task3D } from '@/types/3d';
 
 interface PageProps {
   params: { id: string };
@@ -54,15 +55,15 @@ export default function TimelineViewPage({ params }: PageProps) {
     return { start, end };
   }, [currentDate, viewMode]);
 
-  // Filter and sort tasks by due date
+  // Filter and sort tasks by deadline
   const sortedTasks = useMemo(() => {
     if (!tasksData?.tasks) return [];
 
     return tasksData.tasks
-      .filter(task => task.dueDate) // Only tasks with due dates
+      .filter(task => task.deadline) // Only tasks with deadlines
       .sort((a, b) => {
-        const dateA = new Date(a.dueDate!);
-        const dateB = new Date(b.dueDate!);
+        const dateA = new Date(a.deadline!);
+        const dateB = new Date(b.deadline!);
         return dateA.getTime() - dateB.getTime();
       });
   }, [tasksData]);
@@ -235,7 +236,7 @@ export default function TimelineViewPage({ params }: PageProps) {
  * Timeline Visualization Component
  */
 interface TimelineViewProps {
-  tasks: any[];
+  tasks: Task3D[];
   dateRange: { start: Date; end: Date };
   viewMode: 'day' | 'week' | 'month';
 }
@@ -253,9 +254,9 @@ function TimelineView({ tasks, dateRange, viewMode }: TimelineViewProps) {
 
   // Group tasks by date
   const groupedTasks = tasks.reduce((acc, task) => {
-    if (!task.dueDate) return acc;
+    if (!task.deadline) return acc;
 
-    const date = new Date(task.dueDate);
+    const date = new Date(task.deadline);
     const dateKey = date.toISOString().split('T')[0];
     
     if (!acc[dateKey]) {
@@ -264,7 +265,7 @@ function TimelineView({ tasks, dateRange, viewMode }: TimelineViewProps) {
     acc[dateKey].push(task);
     
     return acc;
-  }, {} as Record<string, any[]>);
+  }, {} as Record<string, Task3D[]>);
 
   // Sort date keys
   const sortedDates = Object.keys(groupedTasks).sort();
@@ -314,7 +315,7 @@ function TimelineView({ tasks, dateRange, viewMode }: TimelineViewProps) {
 
             {/* Tasks for this date */}
             <div className="ml-20 space-y-3">
-              {tasksForDate.map(task => (
+              {tasksForDate.map((task) => (
                 <TimelineTaskCard key={task.id} task={task} />
               ))}
             </div>
@@ -329,16 +330,7 @@ function TimelineView({ tasks, dateRange, viewMode }: TimelineViewProps) {
  * Timeline Task Card Component
  */
 interface TimelineTaskCardProps {
-  task: {
-    id: number | string;
-    title: string;
-    description?: string;
-    priority: number;
-    status: string;
-    dueDate?: string;
-    assignee?: string;
-    labels?: string[];
-  };
+  task: Task3D;
 }
 
 function TimelineTaskCard({ task }: TimelineTaskCardProps) {
@@ -381,7 +373,7 @@ function TimelineTaskCard({ task }: TimelineTaskCardProps) {
 
             <div className="flex items-center gap-4 text-xs text-slate-500 dark:text-slate-400">
               <span>우선순위: {task.priority}</span>
-              {task.assignee && <span>담당: {task.assignee}</span>}
+              {task.assignee && <span>담당: {task.assignee.name}</span>}
             </div>
 
             {task.labels && task.labels.length > 0 && (
