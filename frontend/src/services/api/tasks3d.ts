@@ -8,7 +8,7 @@
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { tokenStorage } from '@/lib/token-storage';
+import { apiFetch } from '@/lib/api-client';
 import type {
   Task3D,
   Tasks3DResponse,
@@ -16,23 +16,6 @@ import type {
   UpdateTaskPriorityRequest,
   ClusterBy,
 } from '@/types/3d';
-
-/**
- * API base URL from environment
- * Falls back to localhost for development
- */
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080';
-
-/**
- * Get authorization headers with access token
- */
-function getAuthHeaders(): HeadersInit {
-  const token = tokenStorage.getAccessToken();
-  return {
-    'Content-Type': 'application/json',
-    ...(token && { 'Authorization': `Bearer ${token}` }),
-  };
-}
 
 /**
  * Fetch tasks for 3D visualization
@@ -53,11 +36,8 @@ export function useTasks3D(
   return useQuery<Tasks3DResponse>({
     queryKey: ['tasks3d', projectId, page, size],
     queryFn: async () => {
-      const response = await fetch(
-        `${API_BASE_URL}/api/projects/${projectId}/tasks/3d?page=${page}&size=${size}`,
-        {
-          headers: getAuthHeaders(),
-        }
+      const response = await apiFetch(
+        `/api/projects/${projectId}/tasks/3d?page=${page}&size=${size}`
       );
       
       if (!response.ok) {
@@ -75,9 +55,11 @@ export function useTasks3D(
       throw new Error(data.message || 'Failed to fetch 3D tasks');
     },
     enabled,
-    staleTime: 30_000, // 30 seconds
-    refetchInterval: enabled ? 500 : false, // Poll every 500ms when enabled
-    refetchIntervalInBackground: false,
+    staleTime: 5 * 60 * 1000, // 5 minutes - 캐시 유지 시간
+    gcTime: 10 * 60 * 1000, // 10 minutes - 가비지 컬렉션 시간
+    refetchOnWindowFocus: false, // 윈도우 포커스 시 재조회 비활성화
+    refetchOnMount: false, // 마운트 시 재조회 비활성화 (캐시 사용)
+    refetchInterval: false, // 주기적 폴링 비활성화
   });
 }
 
@@ -93,11 +75,11 @@ export function useUpdateTaskPriority(projectId: string) {
   
   return useMutation({
     mutationFn: async ({ taskId, priority }: UpdateTaskPriorityRequest) => {
-      const response = await fetch(
-        `${API_BASE_URL}/api/projects/${projectId}/tasks/${taskId}/priority`,
+      const response = await apiFetch(
+        `/api/projects/${projectId}/tasks/${taskId}/priority`,
         {
           method: 'PATCH',
-          headers: getAuthHeaders(),
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ priority }),
         }
       );
@@ -168,11 +150,8 @@ export function useTaskClusters(
   return useQuery<Cluster3D[]>({
     queryKey: ['clusters', projectId, clusterBy],
     queryFn: async () => {
-      const response = await fetch(
-        `${API_BASE_URL}/api/projects/${projectId}/tasks/clusters?by=${clusterBy}`,
-        {
-          headers: getAuthHeaders(),
-        }
+      const response = await apiFetch(
+        `/api/projects/${projectId}/tasks/clusters?by=${clusterBy}`
       );
       
       if (!response.ok) {
@@ -206,11 +185,8 @@ export function usePrefetchTasks3D(projectId: string) {
     queryClient.prefetchQuery({
       queryKey: ['tasks3d', projectId, 0, 100],
       queryFn: async () => {
-        const response = await fetch(
-          `${API_BASE_URL}/api/projects/${projectId}/tasks/3d?page=0&size=100`,
-          {
-            headers: getAuthHeaders(),
-          }
+        const response = await apiFetch(
+          `/api/projects/${projectId}/tasks/3d?page=0&size=100`
         );
         
         const data = await response.json();

@@ -5,26 +5,13 @@
  */
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { tokenStorage } from '@/lib/token-storage';
+import { apiFetch } from '@/lib/api-client';
 import type { 
   Task, 
   CreateTaskRequest, 
   UpdateTaskRequest,
   TasksResponse 
 } from '@/types/task';
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080';
-
-/**
- * Get authorization headers with access token
- */
-function getAuthHeaders(): HeadersInit {
-  const token = tokenStorage.getAccessToken();
-  return {
-    'Content-Type': 'application/json',
-    ...(token && { 'Authorization': `Bearer ${token}` }),
-  };
-}
 
 /**
  * Fetch tasks for a project
@@ -33,11 +20,8 @@ export function useTasks(projectId: string, page: number = 0, size: number = 50)
   return useQuery<TasksResponse>({
     queryKey: ['tasks', projectId, page, size],
     queryFn: async () => {
-      const response = await fetch(
-        `${API_BASE_URL}/api/projects/${projectId}/tasks?page=${page}&size=${size}`,
-        {
-          headers: getAuthHeaders(),
-        }
+      const response = await apiFetch(
+        `/api/projects/${projectId}/tasks?page=${page}&size=${size}`
       );
 
       if (!response.ok) {
@@ -65,11 +49,11 @@ export function useCreateTask(projectId: string) {
 
   return useMutation({
     mutationFn: async (taskData: CreateTaskRequest) => {
-      const response = await fetch(
-        `${API_BASE_URL}/api/projects/${projectId}/tasks`,
+      const response = await apiFetch(
+        `/api/projects/${projectId}/tasks`,
         {
           method: 'POST',
-          headers: getAuthHeaders(),
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(taskData),
         }
       );
@@ -101,11 +85,11 @@ export function useUpdateTask(projectId: string, taskId: string) {
 
   return useMutation({
     mutationFn: async (taskData: UpdateTaskRequest) => {
-      const response = await fetch(
-        `${API_BASE_URL}/api/projects/${projectId}/tasks/${taskId}`,
+      const response = await apiFetch(
+        `/api/projects/${projectId}/tasks/${taskId}`,
         {
           method: 'PATCH',
-          headers: getAuthHeaders(),
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(taskData),
         }
       );
@@ -136,11 +120,10 @@ export function useDeleteTask(projectId: string) {
 
   return useMutation({
     mutationFn: async (taskId: string) => {
-      const response = await fetch(
-        `${API_BASE_URL}/api/projects/${projectId}/tasks/${taskId}`,
+      const response = await apiFetch(
+        `/api/projects/${projectId}/tasks/${taskId}`,
         {
           method: 'DELETE',
-          headers: getAuthHeaders(),
         }
       );
 
