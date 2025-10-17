@@ -117,7 +117,7 @@ export default function Page3D({ params }: PageProps) {
       </main>
 
       {/* React Query DevTools (development only) */}
-      <ReactQueryDevtools initialIsOpen={false} position="bottom-right" />
+      <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
 }
