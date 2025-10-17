@@ -371,8 +371,8 @@ export default function MyPage() {
                     {profile ? formatAuditTimestamp(profile.id) : "정보 없음"}
                   </p>
                 </div>
-                <Button variant="secondary" asChild>
-                  <Link href="/auth/security">보안 설정 (준비 중)</Link>
+                <Button variant="secondary" disabled className="text-xs uppercase tracking-[0.28em]">
+                  보안 설정 (준비 중)
                 </Button>
               </CardBody>
             </Card>
