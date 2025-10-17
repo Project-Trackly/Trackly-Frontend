@@ -347,8 +347,8 @@ export default function OnboardingPage() {
                           name={field.name}
                           value={state[field.name as keyof OnboardingState] as string}
                           onChange={handleInputChange(field.name as keyof OnboardingState)}
-                          placeholder={field.placeholder}
-                          hint={field.hint}
+                          placeholder={"placeholder" in field ? field.placeholder : undefined}
+                          hint={"hint" in field ? field.hint : undefined}
                           required
                         />
                       );
