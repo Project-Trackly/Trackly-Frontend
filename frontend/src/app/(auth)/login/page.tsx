@@ -125,7 +125,7 @@ export default function LoginPage() {
                         return;
                       }
                       setSocialError(null);
-                      router.push(`${socialRouteBase}${provider.route}`);
+                      window.location.href = `${socialRouteBase}${provider.route}`;
                     }}
                     className="justify-start"
                     disabled={!hasApiBaseUrl}
