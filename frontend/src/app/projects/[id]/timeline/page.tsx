@@ -269,6 +269,7 @@ function TimelineView({ tasks, dateRange, viewMode }: TimelineViewProps) {
 
   // Sort date keys
   const sortedDates = Object.keys(groupedTasks).sort();
+  console.log(sortedDates);
 
   return (
     <div className="space-y-8">
